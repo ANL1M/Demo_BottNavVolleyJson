@@ -13,9 +13,16 @@ import org.json.JSONException;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.MyViewHolder> {
     private final JSONArray jsonArray;
+    OnClickItem onClickItem;
 
-    public DataAdapter(JSONArray jsonArray){
+    public interface OnClickItem {
+        void OnItemClick(int position);
+    }
+
+    public DataAdapter(JSONArray jsonArray, OnClickItem onClickItem){
         this.jsonArray = jsonArray;
+        this.onClickItem = onClickItem;
+
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -23,12 +30,21 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.MyViewHolder> 
         private final TextView txtMediaURL;
         private final TextView txtMediaID;
 
-        public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView, OnClickItem onClickItem) {
             super(itemView);
 
             txtMediaName = itemView.findViewById(R.id.txtMediaName);
             txtMediaURL = itemView.findViewById(R.id.txtMediaURL);
             txtMediaID = itemView.findViewById(R.id.txtMediaID);
+
+            itemView.setOnClickListener(item -> {
+                if(onClickItem != null) {
+                    int pos = getAdapterPosition();
+
+                    if(pos != RecyclerView.NO_POSITION)
+                        onClickItem.OnItemClick(pos);
+                }
+            });
         }
     }
 
@@ -36,7 +52,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.MyViewHolder> 
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_media, parent, false);
-        return new MyViewHolder(view);
+        return new MyViewHolder(view, onClickItem);
     }
 
     @Override
