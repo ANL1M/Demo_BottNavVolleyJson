@@ -1,6 +1,6 @@
 package it.anlim.demobottnavvolleyjson;
 
-import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ public class DetailsFragment extends Fragment {
     WebView wvMediaPreview;
     TextView txtFileName, txtEmptyLink;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_details, container, false);
@@ -21,6 +22,7 @@ public class DetailsFragment extends Fragment {
         txtEmptyLink = view.findViewById(R.id.txtEmptyLink);
         wvMediaPreview = view.findViewById(R.id.wvMediaPreview);
 
+        // Getting Media file parameters
         String MediaName = SharedPreferencesHelper.getSession(getActivity(), "MediaName");
         String MediaURL = SharedPreferencesHelper.getSession(getActivity(), "MediaURL");
 
@@ -30,12 +32,14 @@ public class DetailsFragment extends Fragment {
             return view;
         }
 
+        // Set Media file Name
         txtFileName.setText(MediaName);
+
+        // Set content to Web View
         wvMediaPreview.getSettings().setJavaScriptEnabled(true);
         wvMediaPreview.getSettings().setLoadWithOverviewMode(true);
         wvMediaPreview.getSettings().setUseWideViewPort(true);
         wvMediaPreview.loadUrl("http://docs.google.com/gview?embedded=true&url=" + MediaURL);
-
         return view;
     }
 

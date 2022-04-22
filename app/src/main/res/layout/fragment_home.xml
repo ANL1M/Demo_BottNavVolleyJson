@@ -30,7 +30,7 @@
         android:id="@+id/txtEmptyList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="No data to visualize"
+        android:text="@string/no_data_to_visualize"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,6 +45,7 @@
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_refresh" />
+        app:srcCompat="@drawable/ic_refresh"
+        android:contentDescription="@string/floating_button_get_data" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

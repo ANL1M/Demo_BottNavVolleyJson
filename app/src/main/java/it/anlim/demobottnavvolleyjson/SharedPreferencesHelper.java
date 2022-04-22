@@ -3,6 +3,7 @@ package it.anlim.demobottnavvolleyjson;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class SharedPreferencesHelper {
     // Set data to SharedPreferences
@@ -17,6 +18,7 @@ public class SharedPreferencesHelper {
             param.apply();
         }
         catch (Exception e){
+            Log.e("Error","Can't save data to SharedPreferences");
         }
     }
 
@@ -30,6 +32,7 @@ public class SharedPreferencesHelper {
             SharedPreferences session = PreferenceManager.getDefaultSharedPreferences(context);
             result = session.getString(key, "");
         } catch (Exception e) {
+            Log.e("Error","Can't get data from SharedPreferences");
         }
 
         return result;

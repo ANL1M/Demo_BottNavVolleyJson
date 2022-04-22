@@ -2,28 +2,21 @@ package it.anlim.demobottnavvolleyjson;
 
 import static it.anlim.demobottnavvolleyjson.ServerConnection.BASIC_URL;
 import static it.anlim.demobottnavvolleyjson.ServerConnection.DATA_URL;
-
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
 import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +35,7 @@ public class HomeFragment extends Fragment {
         rclMediaList = view.findViewById(R.id.rclMediaList);
         txtEmptyList = view.findViewById(R.id.txtEmptyList);
 
+        //Clear saved parameters
         SharedPreferencesHelper.setSession(getActivity(), "MediaName", "");
         SharedPreferencesHelper.setSession(getActivity(), "MediaURL", "");
 
@@ -49,6 +43,7 @@ public class HomeFragment extends Fragment {
             pbGetData.setVisibility(View.VISIBLE);
             txtEmptyList.setVisibility(View.GONE);
 
+            // Connection to server
             ServerConnection serverConnection = new ServerConnection();
             serverConnection.sendRequest(getActivity(), BASIC_URL, DATA_URL, result -> {
                 pbGetData.setVisibility(View.GONE);
@@ -61,11 +56,12 @@ public class HomeFragment extends Fragment {
                 }
 
                 try {
+                    //Parsing result
                     JSONArray jsonArray = new JSONObject(result).getJSONArray("content");
 
-                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-                    rclMediaList.setLayoutManager(layoutManager);
-                    rclMediaList.setItemAnimator(new DefaultItemAnimator());
+
+
+                    //Item -> OnClick
                     DataAdapter dataAdapter = new DataAdapter(jsonArray, position -> {
                         try {
                             JSONObject jsonObject = jsonArray.getJSONObject(position);
@@ -75,6 +71,7 @@ public class HomeFragment extends Fragment {
                             SharedPreferencesHelper.setSession(getActivity(), "MediaName", MediaName);
                             SharedPreferencesHelper.setSession(getActivity(), "MediaURL", MediaURL);
 
+                            assert getActivity() != null;
                             BottomNavigationView navigationView = getActivity().findViewById(R.id.btmnavMain);
                             navigationView.setSelectedItemId(R.id.detailsFragment);
                         } catch (JSONException e) {
@@ -82,7 +79,27 @@ public class HomeFragment extends Fragment {
                         }
 
                     });
+
+                    // Initialization and setting adapter
+                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+                    rclMediaList.setLayoutManager(layoutManager);
+                    rclMediaList.setItemAnimator(new DefaultItemAnimator());
                     rclMediaList.setAdapter(dataAdapter);
+
+                    //Item -> OnSwipe
+                    new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                        @Override
+                        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                            return false;
+                        }
+
+                        @Override
+                        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                            int position = viewHolder.getAdapterPosition();
+                            jsonArray.remove(position);
+                            dataAdapter.notifyItemRemoved(position);
+                        }
+                    }).attachToRecyclerView(rclMediaList);
 
                 } catch (JSONException e) {
                     txtEmptyList.setVisibility(View.VISIBLE);

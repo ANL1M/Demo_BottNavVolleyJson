@@ -31,7 +31,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtMediaName"
-            tools:text="Media URL" />
+            tools:text="https://github.com/ANL1M"
+            android:autoLink="web"/>
 
         <TextView
             android:id="@+id/txtMediaID"
